@@ -1,65 +1,138 @@
-import Image from "next/image";
+page.js
+"use client";
+
+// Import React dan hook useState untuk mengelola state komponen
+import React, { useState, useEffect } from "react";
+
+// Import komponen GameBoard dan ScoreBoard
+import GameBoard from "@/components/GameBoard";
+import ScoreBoard from "@/components/ScoreBoard";
+
+// Import react-icons
+import { GiCardJoker } from "react-icons/gi";
+import { FaAppleAlt, FaLemon, FaHeart, FaStar } from "react-icons/fa";
+
+// Daftar icon yang digunakan sebagai isi kartu (4 pasang = 8 kartu)
+const icons = [
+  { icon: FaAppleAlt, color: "#ef4444" },
+  { icon: FaLemon, color: "#eab308" },
+  { icon: FaHeart, color: "#ec4899" },
+  { icon: FaStar, color: "#f97316" },
+];
+
+// Fungsi untuk mengacak urutan array menggunakan algoritma Fisher-Yates
+// Menerima parameter 'array' dan mengembalikan array yang sudah diacak
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+// Fungsi untuk membuat set kartu baru
+// Menggandakan setiap icon (untuk membuat pasangan), lalu mengacak urutannya
+const createCards = () => {
+  const paired = icons.flatMap((item, index) => [
+    { id: index * 2, icon: item.icon, color: item.color, pairId: index },
+    { id: index * 2 + 1, icon: item.icon, color: item.color, pairId: index },
+  ]);
+
+  return shuffleArray(paired);
+};
 
 export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+  // State 'cards' menyimpan array kartu yang sudah diacak
+  const [cards, setCards] = useState([]);
+
+  // State 'flippedCards' menyimpan id kartu yang sedang terbuka (maks 2)
+  const [flippedCards, setFlippedCards] = useState([]);
+
+  // State 'matchedCards' menyimpan id kartu yang sudah berhasil dicocokkan
+  const [matchedCards, setMatchedCards] = useState([]);
+
+  // State 'moves' menyimpan jumlah percobaan yang dilakukan pemain
+  const [moves, setMoves] = useState(0);
+
+  // useEffect untuk inisialisasi kartu saat komponen pertama kali dirender
+  useEffect(() => {
+    setCards(createCards());
+  }, []);
+
+  // useEffect untuk mengecek kecocokan setiap kali 2 kartu terbuka
+useEffect(() => {
+  // Proses dicek jika sudah ada 2 kartu terbuka
+  if (flippedCards.length === 2) {
+    const [firstId, secondId] = flippedCards;
+
+    const firstCard = cards.find((c) => c.id === firstId);
+    const secondCard = cards.find((c) => c.id === secondId);
+
+    // Tambah jumlah percobaan setiap kali 2 kartu dibuka
+    setMoves((prev) => prev + 1);
+
+    // Jika kedua kartu memiliki pairId yang sama, berarti cocok
+    if (firstCard.pairId === secondCard.pairId) {
+      // Tambahkan kedua kartu ke matchedCards
+      setMatchedCards((prev) => [...prev, firstId, secondId]);
+      setFlippedCards([]);
+    } else {
+      // Jika tidak cocok, tutup kembali setelah 800ms
+      const timer = setTimeout(() => {
+        setFlippedCards([]);
+      }, 800);
+
+      return () => clearTimeout(timer);
+    }
+  }
+}, [flippedCards, cards]);
+
+// Fungsi untuk membalik kartu ketika diklik
+// Menerima parameter 'id' untuk mengidentifikasi kartu yang diklik
+const handleCardFlip = (id) => {
+  // Hanya izinkan membalik jika kurang dari 2 kartu terbuka
+  // dan kartu yang diklik bukan kartu yang sudah terbuka
+  if (flippedCards.length < 2 && !flippedCards.includes(id)) {
+    setFlippedCards((prev) => [...prev, id]);
+  }
+};
+
+// Fungsi untuk mereset permainan ke kondisi awal
+const resetGame = () => {
+  setCards(createCards());
+  setFlippedCards([]);
+  setMatchedCards([]);
+  setMoves(0);
+};
+
+return (
+  // Container utama dengan background gradient dan tinggi minimal sesuai viewport
+  <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-4">
+
+    {/* Judul aplikasi */}
+    <h1 className="text-4xl font-bold mb-6 text-white drop-shadow-lg flex items-center gap-3">
+      <GiCardJoker className="text-yellow-300 text-4xl" />
+      Memory Card
+    </h1>
+
+    {/* Komponen ScoreBoard untuk menampilkan skor */}
+    <ScoreBoard
+      moves={moves}
+      matchedCount={matchedCards.length / 2}
+      totalPairs={icons.length}
+      onReset={resetGame}
+    />
+
+    {/* Komponen GameBoard untuk menampilkan grid kartu */}
+    <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-2xl">
+      <GameBoard
+        cards={cards}
+        flippedCards={flippedCards}
+        matchedCards={matchedCards}
+        onFlip={handleCardFlip}
+      />
     </div>
+  </div>
   );
 }
