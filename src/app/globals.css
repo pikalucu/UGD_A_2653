@@ -18,19 +18,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Animasi bounce sekali untuk kartu yang baru terbuka */
 @keyframes bounce-once {
-  0% {
-    transform: scale(0.8);
-  }
-
-  50% {
-    transform: scale(1.15);
-  }
-
-  100% {
-    transform: scale(1);
-  }
+  0%   { transform: scale(0.8); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
 }
 
 .animate-bounce-once {

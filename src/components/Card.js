@@ -1,35 +1,25 @@
 import React from "react";
 import { FaQuestion } from "react-icons/fa";
 
-// Komponen untuk menampilkan satu kartu memori
-// props:
-// - card: objek yang berisi informasi kartu (id, icon, color, pairId)
-// - isFlipped: boolean apakah kartu sedang terbuka
-// - isMatched: boolean apakah kartu sudah berhasil dicocokkan
-// - onFlip: fungsi yang dipanggil ketika kartu diklik
 function Card({ card, isFlipped, isMatched, onFlip }) {
-  
-  // Handler ketika kartu diklik
-  // Hanya bisa diklik jika kartu belum terbuka dan belum matched
   const handleClick = () => {
-    if (!isFlipped && !isMatched) {
-      onFlip(card.id);
-    }
+    if (!isFlipped && !isMatched) onFlip(card.id);
   };
 
   const isOpen = isFlipped || isMatched;
   const IconComponent = card.icon;
 
-  // Menentukan className berdasarkan status kartu
-  const cardClass =
-    "w-20 h-28 flex items-center justify-center text-3xl rounded-xl cursor-pointer select-none transition-all duration-300 transform " +
-    (isOpen
-      ? "bg-white shadow-md scale-100 "
-      : "bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg hover:scale-105 hover:shadow-xl");
-
   return (
-    <div onClick={handleClick} className={cardClass}>
-      {/* Tampilkan isi kartu jika kartu terbuka atau sudah cocok, tampilkan ? jika tertutup */}
+    <div
+      onClick={handleClick}
+      className={`w-20 h-24 flex items-center justify-center text-3xl rounded-xl cursor-pointer select-none transition-all duration-300 transform
+        ${isOpen
+          ? "bg-white shadow-md scale-100"
+          : "bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg hover:scale-105 hover:shadow-xl"
+        }
+        ${isMatched ? "opacity-80" : ""}
+      `}
+    >
       {isOpen ? (
         <span className="animate-bounce-once">
           <IconComponent style={{ color: card.color }} />
@@ -42,3 +32,9 @@ function Card({ card, isFlipped, isMatched, onFlip }) {
 }
 
 export default Card;
+```
+
+---
+
+Struktur file yang harus ada di repo:
+```

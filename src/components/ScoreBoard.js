@@ -1,51 +1,47 @@
 import React from "react";
 import { FaClock, FaMousePointer, FaCheck, FaSyncAlt, FaRedo } from "react-icons/fa";
 
-// Komponen untuk menampilkan skor permainan dan tombol reset
-// props:
-// - moves: jumlah percobaan yang sudah dilakukan
-// - matchedCount: jumlah pasangan yang sudah berhasil dicocokkan
-// - totalPairs: total pasangan kartu yang harus dicocokkan
-// - onReset: fungsi untuk mereset permainan
-function ScoreBoard({ moves, matchedCount, totalPairs, onReset }) {
-  // Cek apakah semua pasangan sudah ditemukan
-  const isGameComplete = matchedCount === totalPairs;
-
+function ScoreBoard({ seconds, moves, matchedCount, totalPairs, isComplete, onReset }) {
   return (
-    <div className="text-center mb-6">
-      {/* Tampilkan jumlah percobaan dan pasangan yang ditemukan */}
-      <div className="flex justify-center gap-8 mb-4">
-        <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
-          <p className="text-sm text-indigo-200 flex items-center justify-center gap-1">
-            <FaMousePointer className="text-indigo-300" /> Percobaan
+    <div className="text-center mb-5 w-full max-w-sm">
+      {/* Stats */}
+      <div className="flex justify-center gap-3 mb-4">
+        <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl flex flex-col items-center min-w-[80px]">
+          <p className="text-xs text-indigo-300 flex items-center gap-1 mb-1">
+            <FaClock /> WAKTU
           </p>
-          <p className="text-2xl font-bold text-white">{moves}</p>
+          <p className="text-xl font-bold text-white">{seconds}</p>
         </div>
-
-        <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
-          <p className="text-sm text-indigo-200 flex items-center justify-center gap-1">
-            <FaCheck className="text-indigo-300" /> Ditemukan
+        <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl flex flex-col items-center min-w-[80px]">
+          <p className="text-xs text-indigo-300 flex items-center gap-1 mb-1">
+            <FaMousePointer /> PERCOBAAN
           </p>
-          <p className="text-2xl font-bold text-white">
-            {matchedCount}/{totalPairs}
+          <p className="text-xl font-bold text-white">{moves}</p>
+        </div>
+        <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl flex flex-col items-center min-w-[80px]">
+          <p className="text-xs text-indigo-300 flex items-center gap-1 mb-1">
+            <FaCheck className="text-green-400" /> DITEMUKAN
           </p>
+          <p className="text-xl font-bold text-white">{matchedCount}/{totalPairs}</p>
         </div>
       </div>
 
-      {/* Pesan selamat jika semua pasangan ditemukan */}
-      {isGameComplete && (
-        <p className="text-yellow-300 font-bold text-lg mb-2 animate-pulse">
-          🎉 Selamat! Kamu menang dalam {moves} percobaan!
-        </p>
+      {/* Pesan menang */}
+      {isComplete && (
+        <div className="bg-yellow-400/20 border border-yellow-400/40 rounded-xl px-4 py-2 mb-3">
+          <p className="text-yellow-300 font-bold text-sm">
+            🎉 Selamat! Selesai dalam waktu {seconds} dengan {moves} percobaan!
+          </p>
+        </div>
       )}
 
-      {/* Tombol untuk mereset permainan */}
+      {/* Tombol reset */}
       <button
         onClick={onReset}
-        className="px-6 py-2 bg-yellow-400 text-indigo-900 font-bold rounded-full hover:bg-yellow-300 transition-colors duration-200 shadow-lg flex items-center gap-2 mx-auto"
+        className="px-6 py-2 bg-yellow-400 text-indigo-900 font-bold rounded-full hover:bg-yellow-300 transition-colors shadow-lg flex items-center gap-2 mx-auto"
       >
-        {isGameComplete ? <FaRedo /> : <FaSyncAlt />}
-        {isGameComplete ? "Main Lagi!" : "Acak Ulang"}
+        {isComplete ? <FaRedo /> : <FaSyncAlt />}
+        {isComplete ? "Main Lagi!" : "Acak Ulang"}
       </button>
     </div>
   );
