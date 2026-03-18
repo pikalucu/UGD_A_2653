@@ -4,8 +4,8 @@
 import React, { useState, useEffect } from "react";
 
 // Import komponen GameBoard dan ScoreBoard
-import GameBoard from "@/components/GameBoard";
-import ScoreBoard from "@/components/ScoreBoard";
+import GameBoard from "..GameBoard/components/GameBoard";
+import ScoreBoard from "..ScoreBoard/components/ScoreBoard";
 
 // Import react-icons
 import { GiCardJoker } from "react-icons/gi";
