@@ -1,4 +1,3 @@
-page.js
 "use client";
 
 // Import React dan hook useState untuk mengelola state komponen
