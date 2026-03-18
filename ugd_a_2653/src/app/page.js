@@ -1,31 +1,29 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback } from "react";
-import GameBoard from "./components/GameBoard";
-import ScoreBoard from "./components/ScoreBoard";
-import { GiCardJoker } from "react-icons/gi";
+import React, { useState, useEffect } from 'react';
+import GameBoard from '../components/GameBoard';
+import ScoreBoard from '../components/ScoreBoard';
+import { GiCardJoker } from 'react-icons/gi';
 import {
-  FaAppleAlt, FaLemon, FaHeart, FaStar, FaBolt,
-  FaGem, FaLeaf, FaSnowflake, FaMoon, FaSun,
-} from "react-icons/fa";
+  FaAppleAlt, FaLemon, FaHeart, FaStar,
+  FaBolt, FaGem, FaLeaf, FaSnowflake,
+} from 'react-icons/fa';
 
 const ALL_ICONS = [
-  { icon: FaAppleAlt, color: "#ef4444" },
-  { icon: FaLemon,    color: "#eab308" },
-  { icon: FaHeart,    color: "#ec4899" },
-  { icon: FaStar,     color: "#f97316" },
-  { icon: FaBolt,     color: "#3b82f6" },
-  { icon: FaGem,      color: "#8b5cf6" },
-  { icon: FaLeaf,     color: "#22c55e" },
-  { icon: FaSnowflake,color: "#06b6d4" },
-  { icon: FaMoon,     color: "#a78bfa" },
-  { icon: FaSun,      color: "#fbbf24" },
+  { icon: FaAppleAlt,  color: '#ef4444' },
+  { icon: FaLemon,     color: '#eab308' },
+  { icon: FaHeart,     color: '#ec4899' },
+  { icon: FaStar,      color: '#f97316' },
+  { icon: FaBolt,      color: '#3b82f6' },
+  { icon: FaGem,       color: '#8b5cf6' },
+  { icon: FaLeaf,      color: '#22c55e' },
+  { icon: FaSnowflake, color: '#06b6d4' },
 ];
 
 const LEVELS = {
-  Easy:   { label: "Easy (4)",   pairs: 4  },
-  Medium: { label: "Medium (6)", pairs: 6  },
-  Hard:   { label: "Hard (8)",   pairs: 8  },
+  Easy:   { label: 'Easy (4)',   pairs: 4 },
+  Medium: { label: 'Medium (6)', pairs: 6 },
+  Hard:   { label: 'Hard (8)',   pairs: 8 },
 };
 
 const shuffleArray = (array) => {
@@ -47,52 +45,48 @@ const createCards = (pairs) => {
 };
 
 export default function Home() {
-  const [level, setLevel]           = useState("Easy");
-  const [cards, setCards]           = useState([]);
+  const [level, setLevel]               = useState('Easy');
+  const [cards, setCards]               = useState([]);
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
-  const [moves, setMoves]           = useState(0);
-  const [seconds, setSeconds]       = useState(0);
-  const [isRunning, setIsRunning]   = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
+  const [moves, setMoves]               = useState(0);
+  const [seconds, setSeconds]           = useState(0);
+  const [isComplete, setIsComplete]     = useState(false);
 
   const totalPairs = LEVELS[level].pairs;
 
-  // Init game
-  const startGame = useCallback((selectedLevel) => {
+  const startGame = (selectedLevel) => {
     const lvl = selectedLevel || level;
     setCards(createCards(LEVELS[lvl].pairs));
     setFlippedCards([]);
     setMatchedCards([]);
     setMoves(0);
     setSeconds(0);
-    setIsRunning(false);
     setIsComplete(false);
-  }, [level]);
+  };
 
   useEffect(() => { startGame(); }, []);
 
-  // Timer
+  // Timer langsung jalan, berhenti saat selesai
   useEffect(() => {
-    if (!isRunning || isComplete) return;
+    if (isComplete) return;
     const interval = setInterval(() => setSeconds(s => s + 1), 1000);
     return () => clearInterval(interval);
-  }, [isRunning, isComplete]);
+  }, [isComplete]);
 
   // Cek kecocokan
   useEffect(() => {
     if (flippedCards.length === 2) {
-      const [a, b] = flippedCards;
-      const cardA = cards.find(c => c.id === a);
-      const cardB = cards.find(c => c.id === b);
+      const [firstId, secondId] = flippedCards;
+      const firstCard  = cards.find(c => c.id === firstId);
+      const secondCard = cards.find(c => c.id === secondId);
       setMoves(prev => prev + 1);
-      if (cardA.pairId === cardB.pairId) {
-        const newMatched = [...matchedCards, a, b];
+      if (firstCard.pairId === secondCard.pairId) {
+        const newMatched = [...matchedCards, firstId, secondId];
         setMatchedCards(newMatched);
         setFlippedCards([]);
         if (newMatched.length === totalPairs * 2) {
           setIsComplete(true);
-          setIsRunning(false);
         }
       } else {
         const timer = setTimeout(() => setFlippedCards([]), 800);
@@ -101,8 +95,7 @@ export default function Home() {
     }
   }, [flippedCards, cards]);
 
-  const handleFlip = (id) => {
-    if (!isRunning) setIsRunning(true);
+  const handleCardFlip = (id) => {
     if (flippedCards.length < 2 && !flippedCards.includes(id) && !matchedCards.includes(id)) {
       setFlippedCards(prev => [...prev, id]);
     }
@@ -115,14 +108,13 @@ export default function Home() {
   };
 
   const formatTime = (s) => {
-    const m = Math.floor(s / 60).toString().padStart(2, "0");
-    const sec = (s % 60).toString().padStart(2, "0");
+    const m   = Math.floor(s / 60).toString().padStart(2, '0');
+    const sec = (s % 60).toString().padStart(2, '0');
     return `${m}:${sec}`;
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-950 via-purple-950 to-indigo-900 p-4">
-      {/* Judul */}
       <h1 className="text-4xl font-bold mb-5 text-white flex items-center gap-3">
         <GiCardJoker className="text-yellow-300 text-4xl" />
         Memory Card
@@ -136,8 +128,8 @@ export default function Home() {
             onClick={() => handleLevelChange(lvl)}
             className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
               level === lvl
-                ? "bg-yellow-400 text-indigo-900"
-                : "bg-white/10 text-white hover:bg-white/20"
+                ? 'bg-yellow-400 text-indigo-900'
+                : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
             {LEVELS[lvl].label}
@@ -145,7 +137,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* ScoreBoard */}
       <ScoreBoard
         seconds={formatTime(seconds)}
         moves={moves}
@@ -155,14 +146,12 @@ export default function Home() {
         onReset={() => startGame()}
       />
 
-      {/* GameBoard */}
       <div className="bg-white/10 backdrop-blur-sm p-5 rounded-2xl shadow-2xl">
         <GameBoard
           cards={cards}
           flippedCards={flippedCards}
           matchedCards={matchedCards}
-          onFlip={handleFlip}
-          totalPairs={totalPairs}
+          onFlip={handleCardFlip}
         />
       </div>
     </div>

@@ -1,5 +1,5 @@
-import React from "react";
-import { FaClock, FaMousePointer, FaCheck, FaSyncAlt, FaRedo } from "react-icons/fa";
+import React from 'react';
+import { FaClock, FaMousePointer, FaCheck, FaSyncAlt, FaRedo } from 'react-icons/fa';
 
 function ScoreBoard({ seconds, moves, matchedCount, totalPairs, isComplete, onReset }) {
   return (
@@ -41,7 +41,7 @@ function ScoreBoard({ seconds, moves, matchedCount, totalPairs, isComplete, onRe
         className="px-6 py-2 bg-yellow-400 text-indigo-900 font-bold rounded-full hover:bg-yellow-300 transition-colors shadow-lg flex items-center gap-2 mx-auto"
       >
         {isComplete ? <FaRedo /> : <FaSyncAlt />}
-        {isComplete ? "Main Lagi!" : "Acak Ulang"}
+        {isComplete ? 'Main Lagi!' : 'Acak Ulang'}
       </button>
     </div>
   );
